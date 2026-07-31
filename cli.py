@@ -47,7 +47,14 @@ def run_cli():
             print(f"{'ID':<4} {'Date':<12} {'Description':<18} {'Amount':<8}")
             print("-" * 45)
             for e in expenses:
-                print(f"{e.id:<4} {e.date:<12} {e.description:<18} ₹{e.amount: 2f}")
+                print(f"{e.id:<4} {e.date:<12} {e.description:<18} ₹{e.amount:.2f}")
+
+        elif args.command == "summary":
+            total, month_name = service.get_summary(args.month)
+            if month_name:
+                print(f"# Total expenses for {month_name}: ₹{total:.2f}")
+            else:
+                print(f"# Total expenses: ₹{total:.2f}")
 
         elif args.command == "delete":
             service.delete_expense(args.id)

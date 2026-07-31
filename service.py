@@ -75,19 +75,25 @@ class ExpenseService:
         expenses = self.repo.load_all()
         current_year = datetime.date.today().year
 
+        if not expenses:
+            return 0.0, None
+
         if month is not None:
             if month < 1 or month > 12:
                 raise ValueError("Month must be between 1 and 12.")
 
             month_name = datetime.date(current_year, month, 1).strftime("%B")
+            
+            total = 0.0
+            for e in expenses:
+                try:
+                    exp_date = datetime.datetime.strptime(e.date, "%Y-%m-%d")
+                    if exp_date.month == month and exp_date.year == current_year:
+                        total += e.amount
+                except ValueError:
+                    continue  # Ignore invalid date formats safely
 
-            total = sum(
-                e.amount for e in expenses
-                if datetime.datetime.strptime(e.date, "%y-%m-%d").month == month
-                and datetime.datetime.strptime(e.date, "%y-%m-%d").year == current_year 
-            )
             return round(total, 2), month_name
 
         total = sum(e.amount for e in expenses)
         return round(total, 2), None
-    
